@@ -81,8 +81,4 @@ for line in wordlistOpen:
 
 wordlistOpen.close()
 
-# Start the fuzzing
-
-#r = requests.get(url)
-#print(r)
 
