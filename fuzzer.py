@@ -1,5 +1,5 @@
 # Created: 1/30/2023 by Jonathan Wilson
-# Version: 0.0.2
+# Version: 0.0.3
 # 
 # 
 # Arguments
@@ -8,7 +8,7 @@
 #
 # Todo:
 # 1. Add option to specify if you want to search for directories, files, or both. Allow multiple file endings
-# 2. Calculate the total amount of requests that are going to be run and display it
+# 2. Recalculate the total # of requests based on file endings ^
 # 3. Progress bar?
 
 import sys
@@ -16,6 +16,7 @@ from os.path import exists
 from termcolor import colored
 import re
 import requests
+import argparse
 
 def FileExists(_file):
     fileExists = exists(_file)
@@ -28,16 +29,25 @@ def ValidateURL(_url):
 
 if __name__ == "__main__":
 
-    print("FUZZER")
-    print("Usage: fuzzer.py <Target URL> <Wordlist>")
-    print("")
+    # Argument Parser
+    parser = argparse.ArgumentParser(
+    description="fuzzer.py",
+    epilog="Example Usage:\n\nfuzzer.py -u http://www.google.com:8080/random/dir/ -l /home/user/list.txt\nfuzzer.py -u 192.168.1.69 -l /home/user/list.txt\nfuzzer.py -u 192.168.1.69:65534 -l /home/user/list.txt",
+    formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    if len(sys.argv) !=  3:
-        print("Not enough arguments")
+    parser.add_argument("-u", "--url", help="The target URL. Default port is 80. Set a custom port by using this format: http://<domain>:<port>")
+    parser.add_argument("-l", "--list", help="Wordlist to generate the URLS for fuzzing")
+
+    args = parser.parse_args()
+
+    # Begin
+
+    if len(sys.argv) !=  5:
+        parser.print_help()
         exit()
 
-    url = sys.argv[1]
-    wordlist = sys.argv[2]
+    url = args.url
+    wordlist = args.list
     error = 0
 
     # Validate the URL
