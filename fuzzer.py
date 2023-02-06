@@ -47,6 +47,7 @@ if __name__ == "__main__":
         print("Target: \t" + url)
     else:
         print(colored("Target: \tNot a valid URL or IP address! (%s)" % url, 'red'))
+        error = 1
 
     # Validate that the wordlist exists
     wlExists = FileExists(wordlist)
@@ -68,12 +69,26 @@ if __name__ == "__main__":
         url = "http://" + url
     
     # Open the wordlist
-    wordlistOpen = open(wordlist, 'r')
+    # latin-1 encoding to handle some characters
+    wordlistOpen = open(wordlist, 'r', encoding="latin-1")
+
+    # Count lines
+    totalLines = 0
+    
+    for line in wordlistOpen:
+        if line != "\n":
+            totalLines += 1
+
+    wordlistOpen.close()
+
+    print(f"Requests: \t{totalLines}")
 
     print("\nStart fuzzing? (y/n)")
     confirm = input()
     
     if confirm.lower() == "y" or confirm.lower() == "yes":
+
+        wordlistOpen = open(wordlist, 'r')
 
         for line in wordlistOpen:
             urlFuzz = url + "/"+ line.replace("\n", "") + "/"
@@ -82,7 +97,5 @@ if __name__ == "__main__":
                 print(colored("[*] ", 'blue') + urlFuzz + " " + str(r.status_code))
 
         wordlistOpen.close()
-
-
     else:
         print("Exiting...")
